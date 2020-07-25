@@ -3,15 +3,27 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-	"strings"
-	"os"
 	"log"
+	"net/http"
+	"net/http/httputil"
+	"os"
+	"strings"
 )
 
 func main() {
-	http.HandleFunc("/", handler)
 
+	http.HandleFunc("/headers", func(w http.ResponseWriter, r *http.Request) {
+		b, err := httputil.DumpRequest(r, false)
+		if err != nil {
+			w.Write([]byte("Failed to dump request!"))
+			w.Write([]byte("\n"))
+			return
+		}
+		w.Write(b)
+		w.Write([]byte("\n"))
+	})
+
+	http.HandleFunc("/", handler)
 
 	// [START setting_port]
 	port := os.Getenv("PORT")
